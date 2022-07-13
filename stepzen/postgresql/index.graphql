@@ -31,8 +31,8 @@ type Post {
 type Subreddit {
   created_at: DateTime
   id: ID!
-  postList: [Post] @materializer(query: "getPostUsingSubreddit_id")
   topic: String
+  postList: [Post] @materializer(query: "getPostUsingSubreddit_id")
 }
 
 type Vote {
@@ -55,28 +55,24 @@ type Query {
   getCommentList: [Comment]
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "comment"
       configuration: "postgresql_config"
     )
   getComment(id: ID!): Comment
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "comment"
       configuration: "postgresql_config"
     )
   getPostList: [Post]
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "post"
       configuration: "postgresql_config"
     )
   getPost(id: ID!): Post
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "post"
       configuration: "postgresql_config"
     )
@@ -100,17 +96,25 @@ type Query {
       """
       configuration: "postgresql_config"
     )
+
   getSubredditList: [Subreddit]
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "subreddit"
+      configuration: "postgresql_config"
+    )
+
+  getSubredditListByTopic(topic: String!): [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      query: """
+      select * from "subreddit" T where T."topic" = $1
+      """
       configuration: "postgresql_config"
     )
   getSubreddit(id: ID!): Subreddit
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "subreddit"
       configuration: "postgresql_config"
     )
@@ -127,14 +131,12 @@ type Query {
   getVoteList: [Vote]
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "vote"
       configuration: "postgresql_config"
     )
   getVote(id: ID!): Vote
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "vote"
       configuration: "postgresql_config"
     )
@@ -152,7 +154,6 @@ type Mutation {
   ): Comment
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "comment"
       dml: INSERT
       configuration: "postgresql_config"
@@ -160,7 +161,6 @@ type Mutation {
   deleteComment(id: ID!): Comment
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "comment"
       dml: DELETE
       configuration: "postgresql_config"
@@ -168,14 +168,12 @@ type Mutation {
   insertPost(
     image: String!
     body: String!
-    created_at: DateTime!
     subreddit_id: ID!
     title: String!
     username: String!
   ): Post
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "post"
       dml: INSERT
       configuration: "postgresql_config"
@@ -183,15 +181,14 @@ type Mutation {
   deletePost(id: ID!): Post
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "post"
       dml: DELETE
       configuration: "postgresql_config"
     )
-  insertSubreddit(created_at: DateTime!, topic: String!): Subreddit
+
+  insertSubreddit(topic: String!): Subreddit
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "subreddit"
       dml: INSERT
       configuration: "postgresql_config"
@@ -199,7 +196,6 @@ type Mutation {
   deleteSubreddit(id: ID!): Subreddit
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "subreddit"
       dml: DELETE
       configuration: "postgresql_config"
@@ -212,7 +208,6 @@ type Mutation {
   ): Vote
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "vote"
       dml: INSERT
       configuration: "postgresql_config"
@@ -220,7 +215,6 @@ type Mutation {
   deleteVote(id: ID!): Vote
     @dbquery(
       type: "postgresql"
-      schema: "public"
       table: "vote"
       dml: DELETE
       configuration: "postgresql_config"
